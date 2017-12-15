@@ -1,0 +1,29 @@
+body {
+  margin: 0;
+  padding: 0;
+  font-family: sans-serif;
+}
+
+.grid {
+  height: 500px;
+  line-height: 0;
+  width: 500px;
+}
+
+.cell {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+}
+
+.cell:hover {
+  background-color: #cdebe8;
+}
+
+.on {
+  background-color: #5bbfb3;
+}
+
+.off {
+  background-color: grey;
+}
