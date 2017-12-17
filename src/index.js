@@ -1,41 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
+import Grid from './components/Grid';
 import './index.css';
-
-const Cell = (props) => {
-  return (
-    <div
-      className={ props.cellClassName }
-      key={ props.cellId }
-    />
-  )
-}
-
-class Grid extends React.Component {
-  render() {
-    let fullGrid = [];
-
-    for (let i = 0; i < this.props.rows; i++) {
-      for (let j = 0; j < this.props.cols; j++) {
-        const cellId = `${i}_${j}`;
-        const cellClassName = this.props.grid[i][j] === 1 ? 'cell on' : 'cell off';
-
-        fullGrid.push(
-          <Cell 
-            cellClassName={ cellClassName }
-            key={ cellId }
-          />
-        )
-      }
-    }
-
-    return (
-      <div className="grid">
-        { fullGrid }
-      </div>
-    );
-  }
-}
 
 class Main extends React.Component {
   constructor() {
@@ -50,7 +16,13 @@ class Main extends React.Component {
       grid: Array(this.rows).fill(Array(this.cols)),
       gridEmpty: null
     };
-  }  
+  }
+  
+  handleCellClick = (row, col) => {
+    let newGrid = cloneArray(this.state.grid);
+    newGrid[row][col] = !newGrid[row][col];
+    this.setState({ grid: newGrid });
+  }
 
   seed = () => {
     let seededGrid = cloneArray(this.state.grid);    
@@ -64,9 +36,10 @@ class Main extends React.Component {
     this.setState({ grid: seededGrid, gridEmpty: false });        
   }
 
-  switchButton = () => { 
+  handleStartButtonClick = () => {
     if (this.state.gridEmpty) {
       this.seed();
+      this.setState({ start: true });
       this.startComputation();
     } else {      
       this.setState({ start: !this.state.start }, () => {        
@@ -139,7 +112,7 @@ class Main extends React.Component {
     return (
       <div>
         <h1>The Game of Life</h1>
-        <button onClick={ this.switchButton }>
+        <button onClick={ this.handleStartButtonClick }>
           { this.state.start ? 'Stop' : 'Start'}
         </button>
         <button onClick={ this.clearGrid }>Clear</button>
@@ -147,6 +120,7 @@ class Main extends React.Component {
           grid={ this.state.grid }
           rows={ this.rows }
           cols={ this.cols }
+          handleCellClick={ this.handleCellClick }
         />
         <h2>Generation: { this.state.generation }</h2>
       </div>
@@ -157,14 +131,6 @@ class Main extends React.Component {
 // ================================
 //      HELPER FUNCTIONS
 // ================================
-const create2DArray = (rows, cols) => {
-  let arr = new Array(rows);
-  for (let i = 0; i < arr.length; i++) {
-    arr[i] = new Array(cols);
-  }
-  return arr;
-}
-
 const cloneArray = (arr) => {
   return JSON.parse(JSON.stringify(arr));
 };
