@@ -1,17 +1,18 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import Grid from './components/Grid';
+import Buttons from './components/Buttons';
 import './index.css';
 
 class Main extends React.Component {
   constructor() {
     super();
     this.rows = 50;
-    this.cols = 50;
+    this.cols = 70;  
     this.interval = 200;
     this.state = {
       intervalId: null,      
-      start: true,      
+      isPlaying: true,      
       generation: 0,
       grid: Array(this.rows).fill(Array(this.cols)),
       gridEmpty: null
@@ -24,8 +25,23 @@ class Main extends React.Component {
     this.setState({ grid: newGrid });
   }
 
+  updateGridSize = () => {
+    // if screen width is smaller than 768px,
+    // grid's height is 1.5 the height of window,
+    // hence the number of rows = window's height divided by 1.5, then divided by cellSize(10px)
+    // grid's width equals window's width - 20px,
+    // hence the number of cols = window's width divided by cellSize(10px) minus 2 cols (to add some space) 
+    if (window.innerWidth < 768) {
+      this.rows = Math.floor(window.innerHeight / 1.5 / 10);
+      this.cols = Math.floor(window.innerWidth / 10 - 2);      
+    } else if (window.innerWidth < 992) {
+      this.rows = 40;
+      this.cols = 70;
+    }
+  }
+
   seed = () => {
-    let seededGrid = cloneArray(this.state.grid);    
+    let seededGrid = cloneArray(this.state.grid);       
     
     for (let i = 0; i < this.rows; i++) {
       for (let j = 0; j < this.cols; j++) {
@@ -39,11 +55,11 @@ class Main extends React.Component {
   handleStartButtonClick = () => {
     if (this.state.gridEmpty) {
       this.seed();
-      this.setState({ start: true });
+      this.setState({ isPlaying: true });
       this.startComputation();
     } else {      
-      this.setState({ start: !this.state.start }, () => {        
-        this.state.start ? this.startComputation() : this.stopComputation();        
+      this.setState({ isPlaying: !this.state.isPlaying }, () => {        
+        this.state.isPlaying ? this.startComputation() : this.stopComputation();        
       }); 
     }        
   }
@@ -53,7 +69,7 @@ class Main extends React.Component {
     let newGrid = Array(this.rows).fill(Array(this.cols).fill(0));
     this.setState({ 
       generation: 0,
-      start: false,
+      isPlaying: false,
       grid: newGrid,
       gridEmpty: true 
     });
@@ -102,27 +118,29 @@ class Main extends React.Component {
     neighbors = neighbors - grid[x][y];
     return neighbors;
   }
-  
+
   componentDidMount() {
     this.seed();
+    this.updateGridSize();
     this.startComputation();
-  }
+  }  
 
   render() {    
     return (
       <div>
         <h1>The Game of Life</h1>
-        <button onClick={ this.handleStartButtonClick }>
-          { this.state.start ? 'Stop' : 'Start'}
-        </button>
-        <button onClick={ this.clearGrid }>Clear</button>
-        <Grid 
+        <h2>Generation: { this.state.generation }</h2>
+        <Buttons 
+          isPlaying={ this.state.isPlaying }
+          handleStartButtonClick={ this.handleStartButtonClick }
+          clearGrid={ this.clearGrid }       
+        />        
+        <Grid
           grid={ this.state.grid }
           rows={ this.rows }
           cols={ this.cols }
           handleCellClick={ this.handleCellClick }
-        />
-        <h2>Generation: { this.state.generation }</h2>
+        />        
       </div>
     );
   }
