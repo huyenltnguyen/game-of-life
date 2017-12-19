@@ -14,14 +14,13 @@ class Main extends React.Component {
       intervalId: null,      
       isPlaying: true,      
       generation: 0,
-      grid: Array(this.rows).fill(Array(this.cols)),
-      gridEmpty: null
+      grid: Array(this.rows).fill(Array(this.cols))
     };
   }
   
   handleCellClick = (row, col) => {
     let newGrid = cloneArray(this.state.grid);
-    newGrid[row][col] = !newGrid[row][col];
+    newGrid[row][col] === 0 ? newGrid[row][col] = 1 : newGrid[row][col] = 0;
     this.setState({ grid: newGrid });
   }
 
@@ -40,27 +39,32 @@ class Main extends React.Component {
     }
   }
 
+  checkIfGridIsEmpty = (grid) => {
+    const isEmpty = grid.every((row) => {
+      return row.every((col) => col === 0); 
+    });
+    return isEmpty;
+  }
+
   seed = () => {
-    let seededGrid = cloneArray(this.state.grid);       
-    
+    let seededGrid = cloneArray(this.state.grid);     
     for (let i = 0; i < this.rows; i++) {
       for (let j = 0; j < this.cols; j++) {
         seededGrid[i][j] = Math.floor(Math.random() * 2);
       }
     }
-
     this.setState({ grid: seededGrid, gridEmpty: false });        
   }
 
   handleStartButtonClick = () => {
-    if (this.state.gridEmpty) {
+    if (this.checkIfGridIsEmpty(this.state.grid)) {
       this.seed();
       this.setState({ isPlaying: true });
       this.startComputation();
     } else {      
-      this.setState({ isPlaying: !this.state.isPlaying }, () => {        
+      this.setState({ isPlaying: !this.state.isPlaying }, () => {      
         this.state.isPlaying ? this.startComputation() : this.stopComputation();        
-      }); 
+      });
     }        
   }
 
@@ -71,7 +75,6 @@ class Main extends React.Component {
       generation: 0,
       isPlaying: false,
       grid: newGrid,
-      gridEmpty: true 
     });
   }
 
