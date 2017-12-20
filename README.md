@@ -1,4 +1,4 @@
-# Build a Markdown Previewer
+# Build the Game of Life
 **Objective:** Build a [CodePen.io](https://codepen.io) app that is functionally similar to this: https://codepen.io/FreeCodeCamp/full/reGdqx/.
 #### User stories:
   1. When I first arrive at the game, it will randomly generate a board and start playing.
